@@ -1,0 +1,90 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: {{ template "d4-wordpress-chart.fullname" . }}
+  labels:
+    app: {{ template "d4-wordpress-chart.fullname" . }}
+    chart: {{ template "d4-wordpress-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  serviceName: {{ template "d4-wordpress-chart.fullname" . }}
+  selector:
+    matchLabels:
+      app: {{ template "d4-wordpress-chart.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "d4-wordpress-chart.fullname" . }}
+    spec:
+      initContainers:
+      - name: create-database
+        image: mysql:5.5
+        command: 
+                - bash
+                - -c
+                - |
+                  while ! echo show databases | mysql -h mysql -uroot -p${MYSQL_ROOT_PASSWORD} > /dev/null; do echo $(date) sleeping...; sleep 1; done
+                  echo show databases | mysql -h mysql -uroot -p${MYSQL_ROOT_PASSWORD} | grep ${WORDPRESS_DB_NAME} && exit 0
+                  mysql -h mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${WORDPRESS_DB_NAME}; CREATE USER '${WORDPRESS_DB_USER}'@'%' IDENTIFIED BY '${WORDPRESS_DB_PASSWORD}'; GRANT ALL ON ${WORDPRESS_DB_NAME}.* TO '${WORDPRESS_DB_USER}'@'%'; FLUSH PRIVILEGES;"
+                  echo "Database ${WORDPRESS_DB_NAME} and user ${WORDPRESS_DB_USER} created"
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql
+                key: root
+          - name: WORDPRESS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "d4-wordpress-chart.fullname" . }}
+                key: mysql-user
+          - name: WORDPRESS_DB_NAME
+            value: {{ .Release.Name }}
+          - name: WORDPRESS_DB_USER
+            value: {{ .Release.Name }}
+      containers:
+      - env:
+          - name: WORDPRESS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "d4-wordpress-chart.fullname" . }}
+                key: mysql-user
+          - name: WORDPRESS_DB_NAME
+            value: {{ .Release.Name }}
+          - name: WORDPRESS_DB_USER
+            value: {{ .Release.Name }}
+        image: fabioroger/wordpress:4.9.5-php7.2-apache-5
+        imagePullPolicy: IfNotPresent
+        name: {{ template "d4-wordpress-chart.fullname" . }}
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 150Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: wordpress-root
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+
+  volumeClaimTemplates:
+  - metadata:
+      name: wordpress-root
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+

@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+  name: {{ template "d4-wordpress-chart.fullname" . }}
+spec:
+  rules:
+  - host: {{ .Release.Name }}.directivefour.com
+    http:
+      paths:
+      - backend:
+          serviceName: {{ template "d4-wordpress-chart.fullname" . }}
+          servicePort: 80
+
+  tls:
+  - secretName: directivefour-com-keys-ingress
+    hosts:
+    - {{ .Release.Name }}.directivefour.com
