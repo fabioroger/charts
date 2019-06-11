@@ -14,7 +14,19 @@ spec:
           serviceName: {{ template "d4-wordpress-chart.fullname" . }}
           servicePort: 80
 
+  {{ range .Values.domains }}
+  - host: {{ . }}
+    http:
+      paths:
+        - backend:
+            serviceName: {{ template "d4-wordpress-chart.fullname" . }}
+            servicePort: 80
+  {{ end }}
+
   tls:
   - secretName: {{ .Release.Name }}-directivefour-com-keys-ingress
     hosts:
     - {{ .Release.Name }}.directivefour.com
+  {{ range .Values.domains }}
+    - {{ . }}
+  {{ end }}

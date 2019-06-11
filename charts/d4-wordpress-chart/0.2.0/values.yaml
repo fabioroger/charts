@@ -4,3 +4,5 @@
 
 sendmail:
   from: email@localhost
+
+domains: []
