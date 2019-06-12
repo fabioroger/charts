@@ -1,4 +1,4 @@
-{{- $serviceName := template "d4-wordpress-chart.fullname" . -}}
+{{- $serviceName := (template "d4-wordpress-chart.fullname" .) -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
