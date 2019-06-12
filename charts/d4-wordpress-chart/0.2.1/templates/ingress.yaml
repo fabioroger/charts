@@ -1,3 +1,4 @@
+{{- $serviceName := template "d4-wordpress-chart.fullname" . -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -11,22 +12,22 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: {{ template "d4-wordpress-chart.fullname" . }}
+          serviceName: {{ $serviceName }}
           servicePort: 80
 
-  {{ range .Values.domains }}
+  {{- range .Values.domains -}}
   - host: {{ . }}
     http:
       paths:
         - backend:
-            serviceName: {{ template "d4-wordpress-chart.fullname" . }}
+            serviceName: {{ $serviceName }}
             servicePort: 80
-  {{ end }}
+  {{- end -}}
 
   tls:
   - secretName: {{ .Release.Name }}-directivefour-com-keys-ingress
     hosts:
     - {{ .Release.Name }}.directivefour.com
-  {{ range .Values.domains }}
+  {{- range .Values.domains -}}
     - {{ . }}
-  {{ end }}
+  {{- end -}}
