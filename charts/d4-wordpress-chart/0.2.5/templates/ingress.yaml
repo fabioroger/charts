@@ -1,0 +1,33 @@
+{{- $serviceName := (printf "wordpress-%s" .Release.Name | trunc 63 | trimSuffix "-") -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 1024m
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+  name: {{ template "d4-wordpress-chart.fullname" . }}
+spec:
+  rules:
+  - host: {{ .Release.Name }}.directivefour.com
+    http:
+      paths:
+      - backend:
+          serviceName: {{ $serviceName }}
+          servicePort: 80
+
+  {{- range .Values.domains }}
+  - host: {{ . }}
+    http:
+      paths:
+        - backend:
+            serviceName: {{ $serviceName }}
+            servicePort: 80
+  {{- end }}
+
+  tls:
+  - secretName: {{ .Release.Name }}-directivefour-com-keys-ingress
+    hosts:
+    - {{ .Release.Name }}.directivefour.com
+  {{- range .Values.domains }}
+    - {{ . }}
+  {{- end }}
