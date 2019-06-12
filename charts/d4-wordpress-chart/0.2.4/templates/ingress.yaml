@@ -1,4 +1,4 @@
-{{- $serviceName := (template "d4-wordpress-chart.fullname" .) -}}
+{{- $serviceName := (printf "wordpress-%s" .Release.Name | trunc 63 | trimSuffix "-") -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
