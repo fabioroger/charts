@@ -6,3 +6,7 @@ sendmail:
   from: email@localhost
 
 domains: []
+
+storage:
+  size: 10Gi
+#  className: standard
