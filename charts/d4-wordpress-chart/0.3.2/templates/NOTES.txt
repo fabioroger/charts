@@ -1,0 +1,3 @@
+Site will be available soon in:
+
+     https://{{ .Release.Name }}.directivefour.com
