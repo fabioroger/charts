@@ -10,10 +10,9 @@ spec:
   backend:
     serviceName: {{ $serviceName }}
     servicePort: 80
-
   tls:
-    - secretName: {{ .Release.Name }}-ingress-certs
-      hosts:
-    {{- range .Values.domains }}
-      - {{ . }}
-    {{- end }}
+  - secretName: {{ .Release.Name }}-directivefour-com-keys-ingress
+    hosts:
+  {{- range .Values.domains }}
+    - {{ . }}
+  {{- end }}
