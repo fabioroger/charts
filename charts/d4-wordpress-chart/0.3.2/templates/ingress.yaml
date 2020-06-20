@@ -7,9 +7,15 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   name: {{ template "d4-wordpress-chart.fullname" . }}
 spec:
-  backend:
-    serviceName: {{ $serviceName }}
-    servicePort: 80
+  rules:
+  {{- range .Values.domains }}
+  - host: {{ . }}
+    http:
+      paths:
+        - backend:
+            serviceName: {{ $serviceName }}
+            servicePort: 80
+  {{- end }}
   tls:
   - secretName: {{ .Release.Name }}-directivefour-com-keys-ingress
     hosts:
