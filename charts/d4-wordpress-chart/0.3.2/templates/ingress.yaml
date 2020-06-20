@@ -15,5 +15,5 @@ spec:
     - secretName: {{ .Release.Name }}-ingress-certs
       hosts:
   {{- range .Values.domains }}
-  - {{ . }}
+    - {{ . }}
   {{- end }}
