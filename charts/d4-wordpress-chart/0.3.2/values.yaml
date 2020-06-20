@@ -5,9 +5,7 @@
 sendmail:
   from: email@localhost
 
-domains:
-  - {{ .Release.Name }}.directivefour.com
-
+domains: []
 
 storage:
   size: 10Gi
