@@ -62,6 +62,7 @@ spec:
         name: {{ template "d4-wordpress-chart.fullname" . }}
         livenessProbe:
           failureThreshold: 2
+          initialDelaySeconds: 60
           httpGet:
             path: /index.php
             port: 80
