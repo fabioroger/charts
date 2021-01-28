@@ -6,7 +6,7 @@ sendmail:
   from: email@localhost
 
 domains:
-  - { { .Release.Name } }.directivefour.com
+  - "{{ .Release.Name }}.directivefour.com"
 
 storage:
   size: 10Gi
