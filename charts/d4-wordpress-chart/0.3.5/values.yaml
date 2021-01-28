@@ -5,7 +5,8 @@
 sendmail:
   from: email@localhost
 
-domains: []
+domains:
+  - { { .Release.Name } }.directivefour.com
 
 storage:
   size: 10Gi
