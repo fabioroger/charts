@@ -57,7 +57,7 @@ spec:
             value: {{ .Release.Name }}
           - name: SENDMAIL_FROM
             value: {{ .Values.sendmail.from | default "wordpress@localhost" }}
-        image: fabioroger/wordpress:5.0.3-php7.2-apache-6
+        image: {{ .Values.wordpress.image | default "fabioroger/wordpress:5.7.0-php7.4-apache-1" }}
         imagePullPolicy: IfNotPresent
         name: {{ template "d4-wordpress-chart.fullname" . }}
         livenessProbe:

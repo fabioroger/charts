@@ -10,3 +10,6 @@ domains: []
 storage:
   size: 10Gi
 #  className: standard
+
+wordpress:
+  image: fabioroger/wordpress:5.7.0-php7.4-apache-1
